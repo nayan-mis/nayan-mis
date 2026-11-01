@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 400" width="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+    
+    <filter id="redGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+
+  <!-- Falling Text Background -->
+  <g opacity="0.12" font-family="monospace" font-size="12" fill="#666">
+    <text x="100" y="80">
+      git commit -m "initial"
+      <animate attributeName="y" values="80;500" dur="18s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.12;0" dur="18s" repeatCount="indefinite"/>
+    </text>
+    <text x="500" y="150">
+      const future = await build();
+      <animate attributeName="y" values="150;550" dur="22s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.12;0" dur="22s" repeatCount="indefinite"/>
+    </text>
+    <text x="900" y="100">
+      while(alive) { code(); }
+      <animate attributeName="y" values="100;500" dur="20s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.12;0" dur="20s" repeatCount="indefinite"/>
+    </text>
+    <text x="1300" y="200">
+      export default Turnr;
+      <animate attributeName="y" values="200;600" dur="24s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.12;0" dur="24s" repeatCount="indefinite"/>
+    </text>
+    <text x="1600" y="120">
+      npm run deploy
+      <animate attributeName="y" values="120;520" dur="19s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.12;0" dur="19s" repeatCount="indefinite"/>
+    </text>
+  </g>
+
+  <!-- Wireframe Grid -->
+  <g opacity="0.15" stroke="#ff0033" stroke-width="0.5" fill="none">
+    <line x1="0" y1="200" x2="1920" y2="200">
+      <animate attributeName="opacity" values="0.15;0.3;0.15" dur="4s" repeatCount="indefinite"/>
+    </line>
+    <line x1="960" y1="0" x2="960" y2="400">
+      <animate attributeName="opacity" values="0.15;0.3;0.15" dur="4s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- Fighter A (Left) -->
+  <g id="fighterA">
+    <line x1="350" y1="220" x2="350" y2="270" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="350" cy="212" r="10" fill="#fff"/>
+    <line x1="350" y1="235" x2="335" y2="250" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="350" y1="235" x2="375" y2="228" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="350" y1="270" x2="340" y2="300" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="350" y1="270" x2="360" y2="300" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="375" y1="228" x2="410" y2="215" stroke="#ff0033" stroke-width="2" stroke-linecap="round"/>
+    
+    <animateTransform attributeName="transform" type="translate" 
+      values="0,0; 150,-15; 300,0; 150,15; 0,0" 
+      keyTimes="0; 0.25; 0.5; 0.75; 1"
+      dur="6s" repeatCount="indefinite" 
+      calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"/>
+  </g>
+
+  <!-- Fighter B (Right) -->
+  <g id="fighterB">
+    <line x1="1570" y1="220" x2="1570" y2="270" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="1570" cy="212" r="10" fill="#fff"/>
+    <line x1="1570" y1="235" x2="1585" y2="250" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="1570" y1="235" x2="1545" y2="228" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="1570" y1="270" x2="1560" y2="300" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="1570" y1="270" x2="1580" y2="300" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="1545" y1="228" x2="1510" y2="215" stroke="#ff0033" stroke-width="2" stroke-linecap="round"/>
+    
+    <animateTransform attributeName="transform" type="translate" 
+      values="0,0; -150,-15; -300,0; -150,15; 0,0" 
+      keyTimes="0; 0.25; 0.5; 0.75; 1"
+      dur="6s" repeatCount="indefinite" 
+      calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"/>
+  </g>
+
+  <!-- Clash Effect -->
+  <g opacity="0">
+    <circle cx="960" cy="230" r="25" fill="none" stroke="#ff0033" stroke-width="2.5">
+      <animate attributeName="r" values="8;40;8" dur="6s" keyTimes="0;0.5;1" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;0" dur="6s" keyTimes="0;0.5;1" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Red Menu HUD -->
+  <g filter="url(#redGlow)">
+    <!-- Top Bar -->
+    <rect x="0" y="0" width="1920" height="50" fill="#000" opacity="0.85"/>
+    
+    <!-- REC Indicator -->
+    <circle cx="25" cy="25" r="5" fill="#ff0033">
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <text x="42" y="32" font-family="monospace" font-size="15" fill="#ff0033" font-weight="bold">
+      REC 00:00:06
+    </text>
+
+    <!-- Center Title -->
+    <text x="960" y="32" font-family="monospace" font-size="16" fill="#ff0033" text-anchor="middle" font-weight="bold" letter-spacing="2">
+      THE RED MENU // ACTIVE
+      <animate attributeName="opacity" values="1;0.7;1" dur="3s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- Right Info -->
+    <text x="1895" y="32" font-family="monospace" font-size="14" fill="#ff0033" text-anchor="end">
+      STATUS: ENGAGED
+    </text>
+
+    <!-- Bottom Bar -->
+    <rect x="0" y="370" width="1920" height="30" fill="#000" opacity="0.85"/>
+    
+    <!-- Waveform -->
+    <g transform="translate(80, 385)">
+      <rect x="0" y="0" width="2" height="8" fill="#ff0033">
+        <animate attributeName="height" values="8;15;8" dur="0.5s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="6" y="0" width="2" height="12" fill="#ff0033">
+        <animate attributeName="height" values="12;18;12" dur="0.6s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="12" y="0" width="2" height="6" fill="#ff0033">
+        <animate attributeName="height" values="6;14;6" dur="0.4s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="18" y="0" width="2" height="10" fill="#ff0033">
+        <animate attributeName="height" values="10;16;10" dur="0.7s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="24" y="0" width="2" height="8" fill="#ff0033">
+        <animate attributeName="height" values="8;15;8" dur="0.55s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <text x="1895" y="390" font-family="monospace" font-size="12" fill="#ff0033" text-anchor="end">
+      v1.0.0
+    </text>
+  </g>
+</svg>
