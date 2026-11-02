@@ -1,4 +1,4 @@
-<svg xmlns="http://w3.org" viewBox="0 0 800 400" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
   <defs>
     <!-- Background Gradient -->
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -34,6 +34,7 @@
 
   <!-- Anime Speed Lines (Background Atmosphere) -->
   <g stroke="#ffffff" stroke-opacity="0.1" stroke-width="1" filter="url(#motion-blur)">
+    <animate attributeName="opacity" values="0.55;1;0.55" dur="2.4s" repeatCount="indefinite" />
     <line x1="0" y1="50" x2="800" y2="50" />
     <line x1="0" y1="120" x2="800" y2="120" stroke-opacity="0.05" />
     <line x1="0" y1="280" x2="800" y2="280" stroke-opacity="0.05" />
@@ -46,34 +47,48 @@
   </g>
 
   <!-- Ground / Environment Grid Lines -->
-  <line x1="0" y1="320" x2="800" y2="320" stroke="#39bae6" stroke-opacity="0.3" stroke-width="2" />
+  <line x1="0" y1="320" x2="800" y2="320" stroke="#39bae6" stroke-opacity="0.3" stroke-width="2">
+    <animate attributeName="stroke-opacity" values="0.15;0.45;0.15" dur="3s" repeatCount="indefinite" />
+  </line>
   <line x1="0" y1="335" x2="800" y2="335" stroke="#39bae6" stroke-opacity="0.1" stroke-width="1" />
 
   <!-- LEFT FIGHTER: Anime Protagonist (Blue Aura / Sword) -->
   <g transform="translate(80, 0)">
+    <!-- Dash lunge: in, hold, retract -->
+    <animateTransform attributeName="transform" type="translate"
+      values="80,0; 112,-8; 112,-8; 80,0; 80,0"
+      keyTimes="0; 0.3; 0.5; 0.8; 1"
+      dur="4s" repeatCount="indefinite"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0 0 1 1; 0.4 0 0.2 1; 0.4 0 0.2 1" />
+
     <!-- Energy Aura -->
-    <path d="M 220 230 Q 180 150 210 100 Q 250 160 240 230 Z" fill="#39bae6" fill-opacity="0.25" filter="url(#glow-blue)" />
-    <path d="M 200 240 Q 240 170 230 120 Q 270 190 250 240 Z" fill="#ffb454" fill-opacity="0.2" filter="url(#glow-blue)" />
-    
+    <path d="M 220 230 Q 180 150 210 100 Q 250 160 240 230 Z" fill="#39bae6" fill-opacity="0.25" filter="url(#glow-blue)">
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="1.6s" repeatCount="indefinite" />
+    </path>
+    <path d="M 200 240 Q 240 170 230 120 Q 270 190 250 240 Z" fill="#ffb454" fill-opacity="0.2" filter="url(#glow-blue)">
+      <animate attributeName="opacity" values="1;0.45;1" dur="1.6s" begin="0.4s" repeatCount="indefinite" />
+    </path>
+
     <!-- Stickman Body Structure -->
     <!-- Head with Spiky Anime Hair -->
     <circle cx="220" cy="140" r="12" fill="#e6b450" />
     <path d="M 210 132 L 205 120 L 215 128 L 220 115 L 225 128 L 235 120 L 230 132 Z" fill="#e6b450" />
-    
+
     <!-- Spine (Leaning Forward into Dash) -->
     <line x1="220" y1="152" x2="240" y2="210" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
-    
+
     <!-- Left Leg (Back leg pushing off ground) -->
     <path d="M 240 210 L 200 250 L 170 290" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
     <!-- Right Leg (Forward driving knee) -->
     <path d="M 240 210 L 265 245 L 250 295" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-    
+
     <!-- Left Arm (Holding Scabbard/Balancing behind) -->
     <path d="M 224 165 L 195 185 L 180 210" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    
+
     <!-- Right Arm (Extended forward wielding Katana) -->
     <path d="M 224 165 L 260 170 L 295 160" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    
+
     <!-- Anime Katana + Energy Slash Effect -->
     <g filter="url(#glow-blue)">
       <!-- Sword Handle & Guard -->
@@ -81,43 +96,67 @@
       <!-- Sword Blade -->
       <line x1="305" y1="157" x2="380" y2="135" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
       <!-- Extended Energy Blade Arc -->
-      <path d="M 370 140 Q 430 120 490 80 Q 420 150 365 145 Z" fill="#39bae6" fill-opacity="0.8" />
+      <path d="M 370 140 Q 430 120 490 80 Q 420 150 365 145 Z" fill="#39bae6" fill-opacity="0.8">
+        <animate attributeName="opacity" values="0.55;1;0.55" dur="1.2s" repeatCount="indefinite" />
+      </path>
     </g>
   </g>
 
   <!-- MID-CROSS IMPACT FX (The Clash Point) -->
   <g transform="translate(410, 145)">
     <!-- Shockwave Rings -->
-    <circle cx="0" cy="0" r="25" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.8" filter="url(#glow-blue)" />
-    <circle cx="0" cy="0" r="50" fill="none" stroke="#ff3366" stroke-width="2" opacity="0.5" filter="url(#glow-red)" />
-    
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.8" filter="url(#glow-blue)">
+      <animate attributeName="r" values="16;46;16" dur="2s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.9;0.1;0.9" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="0" cy="0" r="50" fill="none" stroke="#ff3366" stroke-width="2" opacity="0.5" filter="url(#glow-red)">
+      <animate attributeName="r" values="38;78;38" dur="2s" begin="0.35s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.55;0.05;0.55" dur="2s" begin="0.35s" repeatCount="indefinite" />
+    </circle>
+
     <!-- Impact Sparks -->
-    <path d="M -10 -10 L -40 -40 M 10 10 L 40 40 M -15 15 L -50 35 M 15 -15 L 60 -40" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
-    <polygon points="0,-5 8,0 0,5 -8,0" fill="#ffb454" transform="scale(3)" filter="url(#glow-red)" />
+    <path d="M -10 -10 L -40 -40 M 10 10 L 40 40 M -15 15 L -50 35 M 15 -15 L 60 -40" stroke="#ffffff" stroke-width="3" stroke-linecap="round">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="1s" repeatCount="indefinite" />
+    </path>
+    <polygon points="0,-5 8,0 0,5 -8,0" fill="#ffb454" transform="scale(3)" filter="url(#glow-red)">
+      <animate attributeName="opacity" values="1;0.25;1" dur="1s" begin="0.25s" repeatCount="indefinite" />
+    </polygon>
   </g>
 
   <!-- RIGHT FIGHTER: Villain / Rival (Red Dark Energy / Spear-Reaper) -->
   <g transform="translate(-40, 0)">
+    <!-- Dash lunge: in, hold, retract -->
+    <animateTransform attributeName="transform" type="translate"
+      values="-40,0; -72,8; -72,8; -40,0; -40,0"
+      keyTimes="0; 0.3; 0.5; 0.8; 1"
+      dur="4s" repeatCount="indefinite"
+      calcMode="spline"
+      keySplines="0.4 0 0.2 1; 0 0 1 1; 0.4 0 0.2 1; 0.4 0 0.2 1" />
+
     <!-- Dark Energy Aura -->
-    <path d="M 520 220 Q 560 130 515 80 Q 480 140 495 220 Z" fill="#ff3366" fill-opacity="0.3" filter="url(#glow-red)" />
-    <path d="M 540 230 Q 500 140 490 100 Q 460 170 485 230 Z" fill="#f43f5e" fill-opacity="0.15" filter="url(#glow-red)" />
+    <path d="M 520 220 Q 560 130 515 80 Q 480 140 495 220 Z" fill="#ff3366" fill-opacity="0.3" filter="url(#glow-red)">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="1.6s" begin="0.2s" repeatCount="indefinite" />
+    </path>
+    <path d="M 540 230 Q 500 140 490 100 Q 460 170 485 230 Z" fill="#f43f5e" fill-opacity="0.15" filter="url(#glow-red)">
+      <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" begin="0.6s" repeatCount="indefinite" />
+    </path>
 
     <!-- Stickman Body Structure -->
     <!-- Head with flowing evil energy hair/horns -->
     <circle cx="515" cy="130" r="12" fill="#ff3366" />
     <path d="M 523 122 Q 545 105 535 90 Q 525 105 520 118 Z" fill="#ff3366" filter="url(#glow-red)"/>
-    
+
     <!-- Spine (Arched back, mid-strike) -->
     <line x1="515" y1="142" x2="500" y2="205" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
-    
+
     <!-- Left Leg (Braced forward base) -->
     <path d="M 500 205 L 480 245 L 460 295" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
     <!-- Right Leg (Extended back for balance) -->
     <path d="M 500 205 L 535 240 L 565 290" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-    
+
     <!-- Left Arm (Thrusting weapon forward) -->
     <path d="M 510 155 L 470 160 L 430 165" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-    
+
     <!-- Right Arm (Guarding close to chest) -->
     <path d="M 510 155 L 500 175 L 475 178" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 
@@ -128,12 +167,16 @@
       <!-- Energy Blade / Tip Pointing Left -->
       <path d="M 415 170 L 370 185 Q 400 160 422 158 Z" fill="#ff3366" />
       <!-- Mega Energy Blast trailing behind weapon -->
-      <path d="M 530 147 Q 590 130 640 110 Q 580 165 525 152 Z" fill="#ff3366" fill-opacity="0.6" />
+      <path d="M 530 147 Q 590 130 640 110 Q 580 165 525 152 Z" fill="#ff3366" fill-opacity="0.6">
+        <animate attributeName="opacity" values="0.35;1;0.35" dur="1.2s" begin="0.3s" repeatCount="indefinite" />
+      </path>
     </g>
   </g>
-  
+
   <!-- Foreground Debris / Action Floating Particles -->
   <g fill="#ffffff" opacity="0.7">
+    <animate attributeName="opacity" values="0.15;0.75;0.15" dur="3.2s" repeatCount="indefinite" />
+    <animateTransform attributeName="transform" type="translate" values="0,10; 0,-28; 0,10" dur="3.2s" repeatCount="indefinite" />
     <circle cx="380" cy="180" r="3" />
     <circle cx="450" cy="130" r="2.5" />
     <polygon points="420,220 425,228 418,225" fill="#39bae6" />
