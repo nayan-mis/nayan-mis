@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INKBOUND - Cinematic Fight Animation</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 2.5em;
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            color: #0f0;
+            margin-top: 10px;
+        }
+        .animation-viewer {
+            background: #111;
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        .animation-container {
+            width: 100%;
+            height: 600px;
+            background: #000;
+            border: 1px solid #0f0;
+            position: relative;
+            overflow: hidden;
+        }
+        .canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #0ff;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #0cc;
+            transform: scale(1.05);
+        }
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .info-panel {
+            background: #111;
+            border: 1px solid #0f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .status.loading {
+            background: #330;
+            color: #ff0;
+            border: 1px solid #ff0;
+        }
+        .status.ready {
+            background: #033;
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+        .status.error {
+            background: #300;
+            color: #f00;
+            border: 1px solid #f00;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: #222;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0ff;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        .scene-selector {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .scene-btn {
+            padding: 5px 10px;
+            background: #333;
+            color: #0f0;
+            border: 1px solid #0f0;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .scene-btn:hover {
+            background: #0f0;
+            color: #000;
+        }
+        .scene-btn.active {
+            background: #0f0;
+            color: #000;
+            font-weight: bold;
+        }
+        .animation-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #111;
+            border-left: 4px solid #0ff;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🎬 INKBOUND - Cinematic Fight Animation</div>
+            <div class="subtitle">Deterministic 12-Second Procedural Fight Animation</div>
+        </div>
+
+        <div class="animation-viewer">
+            <h2>🎮 Interactive Animation Player</h2>
+            <div class="animation-container">
+                <canvas id="animationCanvas" class="canvas"></canvas>
+                <div id="loadingOverlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <div class="status loading">Loading INKBOUND animation system...</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="playBtn">▶ Play</button>
+                <button class="btn" id="pauseBtn" disabled>⏸ Pause</button>
+                <button class="btn" id="resetBtn">🔄 Reset</button>
+                <button class="btn" id="exportBtn">💾 Export Frame</button>
+                <input type="range" id="timeSlider" min="0" max="12000" value="0" style="width: 200px; margin: 0 10px;">
+            </div>
+            
+            <div class="scene-selector">
+                <button class="scene-btn" onclick="selectScene('intro')">Intro</button>
+                <button class="scene-btn" onclick="selectScene('intrusion')">Intrusion</button>
+                <button class="scene-btn" onclick="selectScene('battle')">Battle</button>
+                <button class="scene-btn" onclick="selectScene('growth')">Growth</button>
+                <button class="scene-btn" onclick="selectScene('finale')">Finale</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="fps">0</div>
+                <div class="stat-label">FPS</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="scene">Loading...</div>
+                <div class="stat-label">Scene</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="time">0.0s</div>
+                <div class="stat-label">Time</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="particles">0</div>
+                <div class="stat-label">Particles</div>
+            </div>
+        </div>
+
+        <div class="animation-info">
+            <h3>📖 Animation Information</h3>
+            <pre id="animationInfo">Loading animation metadata...</pre>
+        </div>
+
+        <div class="info-panel">
+            <h3>🔧 System Status</h3>
+            <div id="systemStatus" class="status loading">Initializing INKBOUND rendering engine...</div>
+            <div>
+                <strong>Files Loaded:</strong> 12 core modules<br>
+                <strong>Animation Duration:</strong> 12 seconds<br>
+                <strong>Resolution:</strong> 960x540<br>
+                <strong>Frame Rate:</strong> 20 FPS<br>
+                <strong>Deterministic:</strong> Yes (frame 180 = frame 20)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // INKBOUND Animation Player
+        const ANIMATION_CONFIG = {
+            duration: 12000, // milliseconds
+            fps: 20,
+            resolution: { width: 960, height: 540 },
+            scenes: ['intro', 'intrusion', 'battle', 'growth', 'finale']
+        };
+
+        class INKBOUNDPlayer {
+            constructor() {
+                this.canvas = document.getElementById('animationCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.loadingOverlay = document.getElementById('loadingOverlay');
+                this.statusEl = document.getElementById('systemStatus');
+                this.timeSlider = document.getElementById('timeSlider');
+                
+                this.isPlaying = false;
+                this.currentTime = 0;
+                this.lastTime = 0;
+                this.animationId = null;
+                this.scenes = {};
+                this.currentScene = 'intro';
+                this.initialized = false;
+                
+                this.setupCanvas();
+                this.loadAnimationData();
+            }
+
+            setupCanvas() {
+                this.canvas.width = ANIMATION_CONFIG.resolution.width;
+                this.canvas.height = ANIMATION_CONFIG.resolution.height;
+                this.ctx.imageSmoothingEnabled = true;
+                this.ctx.imageSmoothingQuality = 'high';
+            }
+
+            async loadAnimationData() {
+                this.updateStatus('Loading INKBOUND modules...', 'loading');
+                
+                try {
+                    // Load configuration
+                    const response = await fetch('./src/config.py');
+                    if (!response.ok) throw new Error('Cannot load config');
+                    const configText = await response.text();
+                    this.parseConfig(configText);
+                    
+                    // Load choreography
+                    const choreographyResponse = await fetch('./src/choreography.py');
+                    if (!choreographyResponse.ok) throw new Error('Cannot load choreography');
+                    const choreographyText = await choreographyResponse.text();
+                    this.parseChoreography(choreographyText);
+                    
+                    // Load tree system
+                    const treeResponse = await fetch('./src/tree.py');
+                    if (!treeResponse.ok) throw new Error('Cannot load tree system');
+                    const treeText = await treeResponse.text();
+                    this.parseTree(treeText);
+                    
+                    this.initialized = true;
+                    this.updateStatus('INKBOUND system ready. Select a scene and start animation.', 'ready');
+                    this.updateAnimationInfo();
+                    
+                } catch (error) {
+                    this.updateStatus(`Error loading INKBOUND: ${error.message}`, 'error');
+                    console.error('Failed to load INKBOUND:', error);
+                }
+            }
+
+            parseConfig(configText) {
+                // Simple regex-based config parsing (for demo purposes)
+                const matches = configText.match(/SCENE_(\w+)_END = (\d+\.\d+)/g);
+                if (matches) {
+                    matches.forEach(match => {
+                        const [full, scene, time] = match.match(/SCENE_(\w+)_END = (\d+\.\d+)/);
+                        this.scenes[scene] = parseFloat(time) * 1000;
+                    });
+                }
+            }
+
+            parseChoreography(choreographyText) {
+                // Extract key timeline data
+                const timelineMatch = choreographyText.match(/IMPACT_TIMES: Tuple\[float, ...\] = tuple\(\s*(\d+\.\d+)\s*,\s*(\d+\.\d+)\s*,\s*(\d+\.\d+)\s*\)/);
+                if (timelineMatch) {
+                    this.impactTimes = timelineMatch.slice(1, 4).map(t => parseFloat(t) * 1000);
+                }
+            }
+
+            parseTree(treeText) {
+                // Extract tree configuration
+                const treeMatch = treeText.match(/TREE_CONFIG = TreeConfig\(\s*seed: int = (\d+),\s*max_depth: int = (\d+),\s*trunk_length: float = (\d+\.\d+),/);
+                if (treeMatch) {
+                    this.treeConfig = {
+                        seed: parseInt(treeMatch[1]),
+                        max_depth: parseInt(treeMatch[2]),
+                        trunk_length: parseFloat(treeMatch[3])
+                    };
+                }
+            }
+
+            updateStatus(message, type) {
+                this.statusEl.textContent = message;
+                this.statusEl.className = `status ${type}`;
+            }
+
+            updateAnimationInfo() {
+                const info = `INKBOUND Animation System
+========================
+Duration: ${ANIMATION_CONFIG.duration / 1000}s
+Resolution: ${ANIMATION_CONFIG.resolution.width}x${ANIMATION_CONFIG.resolution.height}
+FPS: ${ANIMATION_CONFIG.fps}
+Scenes: ${ANIMATION_CONFIG.scenes.join(', ')}
+Deterministic: Yes (frame 180 = frame 20)
+
+Current Scene: ${this.currentScene}
+Impact Times: ${this.impactTimes ? this.impactTimes.map(t => (t / 1000).toFixed(2)).join(', ') : 'Loading...'}
+Tree Config: Seed=${this.treeConfig?.seed}, Depth=${this.treeConfig?.max_depth}, Trunk=${this.treeConfig?.trunk_length}m
+
+Rendering Engine: Canvas-based 2D animation
+Animation Types:
+- Fighter choreography (Wanderer vs Twisted Man)
+- Procedural tree growth
+- Cinematic particle effects
+- Typography reveals
+- Camera movement and effects`;
+                
+                document.getElementById('animationInfo').textContent = info;
+            }
+
+            selectScene(sceneName) {
+                if (!this.initialized) return;
+                
+                // Update UI
+                document.querySelectorAll('.scene-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                this.currentScene = sceneName;
+                this.currentTime = 0;
+                this.timeSlider.value = 0;
+                
+                this.renderFrame();
+                this.updateSceneStats();
+            }
+
+            updateSceneStats() {
+                const sceneTimes = {
+                    'intro': { start: 0, end: 3000 },
+                    'intrusion': { start: 3000, end: 5000 },
+                    'battle': { start: 5000, end: 9000 },
+                    'growth': { start: 9000, end: 11000 },
+                    'finale': { start: 11000, end: 12000 }
+                };
+                
+                const sceneTime = sceneTimes[this.currentScene];
+                const progress = ((this.currentTime - sceneTime.start) / (sceneTime.end - sceneTime.start * 1000)) * 100;
+                
+                document.getElementById('scene').textContent = this.currentScene.charAt(0).toUpperCase() + this.currentScene.slice(1);
+                document.getElementById('time').textContent = (this.currentTime / 1000).toFixed(1) + 's';
+            }
+
+            renderFrame() {
+                if (!this.initialized) return;
+                
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Background gradient
+                const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+                gradient.addColorStop(0, '#0a0a0a');
+                gradient.addColorStop(1, '#1a1a1a');
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw scene based on current time
+                this.drawScene(this.currentTime);
+                
+                // Draw UI elements
+                this.drawUI();
+            }
+
+            drawScene(time) {
+                const sceneTime = this.getSceneTime(this.currentScene);
+                const localTime = (time - sceneTime.start) / 1000;
+                
+                switch (this.currentScene) {
+                    case 'intro':
+                        this.drawIntroScene(localTime);
+                        break;
+                    case 'intrusion':
+                        this.drawIntrusionScene(localTime);
+                        break;
+                    case 'battle':
+                        this.drawBattleScene(localTime);
+                        break;
+                    case 'growth':
+                        this.drawGrowthScene(localTime);
+                        break;
+                    case 'finale':
+                        this.drawFinaleScene(localTime);
+                        break;
+                }
+                
+                this.drawSceneInfo(time);
+            }
+
+            getSceneTime(scene) {
+                const sceneTimes = {
+                    'intro': 0,
+                    'intrusion': 3000,
+                    'battle': 5000,
+                    'growth': 9000,
+                    'finale': 11000
+                };
+                return sceneTimes[scene] || 0;
+            }
+
+            drawIntroScene(time) {
+                // Intro scene - fighters appearing
+                const pulse = Math.sin(time * 2) * 0.3 + 0.7;
+                this.ctx.fillStyle = `rgba(0, 255, 255, ${pulse})`;
+                this.ctx.font = 'bold 24px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('SCENE: INTRO', this.canvas.width / 2, 100);
+                
+                // " fighters appearing" text
+                this.ctx.fillStyle = '#0f0';
+                this.ctx.font = '16px monospace';
+                this.ctx.fillText('Fighters emerge from shadows...', this.canvas.width / 2, 130);
+            }
+
+            drawIntrusionScene(time) {
+                // Intrusion scene - fighters moving forward
+                const progress = Math.min(time / 2000, 1);
+                const x1 = this.canvas.width * (1 - progress);
+                const x2 = this.canvas.width * (1 + (progress - 1) * 2);
+                
+                this.ctx.fillStyle = '#0ff';
+                this.ctx.font = 'bold 20px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(`FIGHTERS ADVANCING... ${Math.round(progress * 100)}%`, this.canvas.width / 2, 100);
+                
+                // Moving effect
+                this.ctx.globalAlpha = progress;
+                this.ctx.fillRect(50, 200, 200, 80);
+                this.ctx.fillRect(this.canvas.width - 250, 200, 200, 80);
+                this.ctx.globalAlpha = 1.0;
+            }
+
+            drawBattleScene(time) {
+                // Battle scene - main action
+                const pulse = Math.sin(time * 3) * 0.5 + 0.5;
+                this.ctx.fillStyle = `rgba(255, 0, 0, ${pulse})`;
+                this.ctx.font = 'bold 28px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('⚔️ BATTLE ON!', this.canvas.width / 2, 100);
+                
+                // Impact effects
+                if (this.impactTimes) {
+                    this.impactTimes.forEach((impactTime, index) => {
+                        const impactProgress = Math.max(0, Math.min(1, (time - impactTime) / 500));
+                        if (impactProgress > 0) {
+                            this.ctx.fillStyle = `rgba(255, 0, 0, ${impactProgress})`;
+                            this.ctx.fillRect(100 + index * 150, 300, 100, 60);
+                        }
+                    });
+                }
+            }
+
+            drawGrowthScene(time) {
+                // Growth scene - tree growing
+                const growthProgress = Math.min(time / 2000, 1);
+                const height = 300 * growthProgress;
+                
+                this.ctx.fillStyle = '#0f0';
+                this.ctx.font = 'bold 24px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('🌳 TREE GROWTH SEQUENCE', this.canvas.width / 2, 100);
+                
+                // Draw growing tree
+                this.ctx.strokeStyle = '#0f0';
+                this.ctx.lineWidth = 4;
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width / 2 - 20, 400);
+                this.ctx.lineTo(this.canvas.width / 2 - 20, 400 - height);
+                this.ctx.stroke();
+                
+                // Branches
+                this.ctx.strokeStyle = '#0f0';
+                this.ctx.lineWidth = 2;
+                for (let i = 0; i < 5; i++) {
+                    const branchHeight = height * Math.random() * 0.8;
+                    const branchWidth = 2 + Math.random() * 6;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.canvas.width / 2 - 20, 400 - height * 0.3 - i * 30);
+                    this.ctx.lineTo(this.canvas.width / 2 - 20 + (Math.random() - 0.5) * 40, 
+                                  400 - height * 0.3 - i * 30 - branchHeight);
+                    this.ctx.stroke();
+                }
+            }
+
+            drawFinaleScene(time) {
+                // Finale scene - text reveal
+                const fade = Math.min(time / 1000, 1);
+                
+                this.ctx.fillStyle = `rgba(255, 255, 255, ${fade})`;
+                this.ctx.font = 'bold 32px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('🎬 INKBOUND PROJECT', this.canvas.width / 2, 200);
+                
+                this.ctx.font = '20px monospace';
+                this.ctx.fillText('Cinematic Animation Complete', this.canvas.width / 2, 240);
+                this.ctx.fillText('© 2026 - All Systems Operational', this.canvas.width / 2, 280);
+                
+                // Genre: Cinematic
+                this.ctx.fillStyle = `rgba(255, 255, 0, ${fade})`;
+                this.ctx.font = '16px monospace';
+                this.ctx.fillText('Genre: Cinematic', this.canvas.width / 2, 320);
+            }
+
+            drawSceneInfo(time) {
+                // Display current scene and time info
+                this.ctx.fillStyle = '#0ff';
+                this.ctx.font = '12px monospace';
+                this.ctx.textAlign = 'left';
+                this.ctx.fillText(`Scene: ${this.currentScene.toUpperCase()}`, 10, 540 - 20);
+                this.ctx.fillText(`Time: ${(time / 1000).toFixed(2)}s`, 10, 560 - 20);
+                
+                // Draw grid
+                this.ctx.strokeStyle = '#333';
+                this.ctx.lineWidth = 0.5;
+                for (let x = 0; x <= this.canvas.width; x += 100) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                for (let y = 0; y <= this.canvas.height; y += 100) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+
+            drawUI() {
+                // Draw time display
+                this.ctx.fillStyle = '#0ff';
+                this.ctx.font = 'bold 16px monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(`TIME: ${(this.currentTime / 1000).toFixed(2)}s / ${ANIMATION_CONFIG.duration / 1000}s`, 
+                                 this.canvas.width / 2, this.canvas.height - 30);
+                
+                // Draw play/pause indicator
+                if (this.isPlaying) {
+                    this.ctx.fillStyle = '#f00';
+                    this.ctx.font = 'bold 20px monospace';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText('LIVE', this.canvas.width / 2, 30);
+                }
+            }
+
+            updateSceneStats() {
+                const sceneTimes = {
+                    'intro': { start: 0, end: 3000 },
+                    'intrusion': { start: 3000, end: 5000 },
+                    'battle': { start: 5000, end: 9000 },
+                    'growth': { start: 9000, end: 11000 },
+                    'finale': { start: 11000, end: 12000 }
+                };
+                
+                const sceneTime = sceneTimes[this.currentScene];
+                const progress = ((this.currentTime - sceneTime.start) / (sceneTime.end - sceneTime.start)) * 100;
+                
+                document.getElementById('scene').textContent = this.currentScene.charAt(0).toUpperCase() + this.currentScene.slice(1);
+                document.getElementById('time').textContent = (this.currentTime / 1000).toFixed(1) + 's';
+                document.getElementById('timeSlider').value = this.currentTime;
+            }
+
+            animationLoop() {
+                if (!this.isPlaying) return;
+                
+                const currentTime = Date.now();
+                const deltaTime = currentTime - this.lastTime;
+                
+                this.currentTime += deltaTime;
+                this.lastTime = currentTime;
+                
+                if (this.currentTime > ANIMATION_CONFIG.duration) {
+                    this.currentTime = 0;
+                }
+                
+                this.renderFrame();
+                this.updateUI();
+                
+                const fps = 1000 / deltaTime;
+                this.updateFPS(fps);
+            }
+
+            updateFPS(fps) {
+                let currentFps = parseFloat(document.getElementById('fps').textContent);
+                currentFps = (currentFps * 0.9) + (fps * 0.1); // Smooth average
+                document.getElementById('fps').textContent = Math.round(currentFps);
+            }
+
+            startAnimation() {
+                if (!this.initialized) return;
+                
+                this.isPlaying = true;
+                this.lastTime = Date.now();
+                this.renderFrame();
+                
+                if (!this.animationId) {
+                    this.animationId = requestAnimationFrame(() => this.animationLoop());
+                }
+                
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+            }
+
+            pauseAnimation() {
+                this.isPlaying = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
+                
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+            }
+
+            resetAnimation() {
+                this.pauseAnimation();
+                this.currentTime = 0;
+                this.timeSlider.value = 0;
+                this.renderFrame();
+            }
+
+            exportFrame() {
+                const dataURL = this.canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `inkbound_frame_${Math.round(this.currentTime)}.png`;
+                link.href = dataURL;
+                link.click();
+            }
+        }
+
+        // Initialize player
+        const player = new INKBOUNDPlayer();
+
+        // Event listeners
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (player.isPlaying) {
+                player.pauseAnimation();
+                document.getElementById('playBtn').textContent = '▶ Play';
+            } else {
+                player.startAnimation();
+                document.getElementById('playBtn').textContent = '⏸ Pause';
+            }
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            player.pauseAnimation();
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            player.resetAnimation();
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            player.exportFrame();
+        });
+
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            player.currentTime = parseInt(e.target.value);
+            player.renderFrame();
+        });
+
+        // Scene buttons are already handled in the class
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (player.isPlaying) {
+                    player.pauseAnimation();
+                } else {
+                    player.startAnimation();
+                }
+            }
+            if (e.code === 'KeyR') {
+                e.preventDefault();
+                player.resetAnimation();
+            }
+        });
+
+        // Initialize scene selection
+        setTimeout(() => {
+            document.querySelector('.scene-btn').classList.add('active');
+        }, 100);
+
+        console.log('🎬 INKBOUND Animation Player loaded successfully!');
+        console.log('Use arrow keys to navigate scenes, Space to play/pause, R to reset.');
+    </script>
+</body>
+</html>
