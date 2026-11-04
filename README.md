@@ -1,4 +1,4 @@
-![THE RED MENU](https://raw.githubusercontent.com/nayan-mis/nayan-mis/main/tmp-profile/fight.svg)
+![THE RED MENU](https://raw.githubusercontent.com/nayan-mis/nayan-mis/main/fight.svg)
 
 # Hi, I'm Nayan Mishra 👋
 
