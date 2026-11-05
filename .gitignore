@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Render output (regenerate with `python -m src.render`)
+output/frames/
+output/*.webp
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
