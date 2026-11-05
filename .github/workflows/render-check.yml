@@ -1,0 +1,52 @@
+name: render-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Renderer self-test
+        run: python -m src.render --test
+
+      - name: Determinism check (frame 180 must equal frame 180)
+        run: |
+          python - <<'PY'
+          from src.config import CONFIG
+          from src.render import render_frame
+
+          t = CONFIG.frame_time(180)
+          a = render_frame(t, draft=True).tobytes()
+          b = render_frame(t, draft=True).tobytes()
+          assert a == b, "renderer is not deterministic at frame 180"
+          print("deterministic:", CONFIG.frame_time(180))
+          PY
+
+      - name: Export smoke test (animated WebP, 6 frames)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          from src.render import export_webp
+
+          out = Path("output/smoke.webp")
+          export_webp(out, indices=[0, 40, 80, 120, 160, 200], draft=True, progress=False)
+          with Image.open(out) as im:
+              assert im.format == "WEBP"
+              assert getattr(im, "n_frames", 1) == 6, im.n_frames
+          print("webp ok:", out.stat().st_size, "bytes")
+          PY
